@@ -2,7 +2,7 @@
   "version": "0.2.16",
   "license": "MIT",
   "main": "lib/index.ts",
-  "module": "dist/es2015/index.js",
+  "module": "lib/index.ts",
   "files": [
     "dist",
     "lib"
@@ -21,7 +21,7 @@
     "trailingComma": "es5",
     "tabWidth": 2
   },
-  "name": "@xania/view",
+  "name": "@xania/router",
   "author": "Ibrahim ben Salah",
   "devDependencies": {
     "mini-css-extract-plugin": "2.4.4",
@@ -33,5 +33,7 @@
     "webpack": "5.64.0",
     "webpack-cli": "^4.9.1"
   },
-  "peerDependencies": {}
+  "peerDependencies": {
+    "rxjs": "7.5.2"
+  }
 }
