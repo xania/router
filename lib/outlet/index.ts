@@ -140,8 +140,8 @@ function createScope(targetElement: Element) {
 
   return {
     appendChild(node: Node) {
-      const lastNode = nodes[nodes.length - 1];
-      lastNode.insertBefore(commentNode, node);
+      const lastNode = nodes[nodes.length - 1] || commentNode;
+      targetElement.insertBefore(node, lastNode);
       nodes.push(node);
     },
     addEventListener(
@@ -149,6 +149,10 @@ function createScope(targetElement: Element) {
       handler: (this: Element, event: Event) => void
     ) {
       targetElement.addEventListener(type, handler);
+    },
+    insertBefore<T extends Node>(node: T, child: Node | null) {
+      targetElement.insertBefore(node, child);
+      return node;
     },
     dispose() {
       for (const node of nodes) {
