@@ -63,10 +63,10 @@ function isArrayEmpty(arr: any[]) {
 }
 
 function isRoute(value: any): value is Route<any> {
-  return value && value.path && value.view;
+  return value && 'path' in value;
 }
 function isComponentRoute(value: any): value is ComponentRoute<any> {
-  return 'component' in value;
+  return value && 'component' in value;
 }
 
 function memoize<TF extends (...args: any[]) => any>(fn: TF) {
