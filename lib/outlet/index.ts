@@ -6,6 +6,7 @@ import { Router } from 'types/router';
 import { length, map } from '../helpers/linked-list';
 import { render, Template } from '@xania/view';
 import { RouteInput } from '../route';
+import { RenderTarget } from '@xania/view';
 
 interface RouterOutletProps<TView> {
   router: Router;
@@ -86,7 +87,7 @@ function createRouterOutlet<TView extends Template>(
     return {
       dispose() {
         // disposeMany(bindings);
-        scope.dispose();
+        // scope.dispose();
       },
     };
   }
@@ -133,7 +134,7 @@ function createRouterOutlet<TView extends Template>(
 //   return !!x && typeof x.then == 'function';
 // }
 
-function createScope(targetElement: Element) {
+function createScope(targetElement: Element): RenderTarget {
   const commentNode = document.createComment('');
   targetElement.appendChild(commentNode);
   const nodes: Node[] = [];
@@ -154,11 +155,10 @@ function createScope(targetElement: Element) {
       targetElement.insertBefore(node, child);
       return node;
     },
-    dispose() {
-      for (const node of nodes) {
-        targetElement.removeChild(node);
-      }
-    },
+    // dispose() {
+    //   for (const node of nodes) {
+    //     targetElement.removeChild(node);
+    //   }
   };
 }
 
