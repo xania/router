@@ -1,20 +1,21 @@
 import * as Rx from 'rxjs';
 import * as Ro from 'rxjs/operators';
-import { UrlHelper } from '../url-helper';
 import { createPathResolver, ResolvedPath } from '../resolvers/path-resolver';
-import { Router } from 'types/router';
+import {
+  PathResolved,
+  PathResolver,
+  RouteInput,
+  Router,
+  ViewContext,
+} from '../../types/router';
 import { length, map } from '../helpers/linked-list';
 import { render, Template } from '@xania/view';
-import { RouteInput } from '../route';
 import { RenderTarget } from '@xania/view';
+import { UrlHelper } from '../../types/url-helper';
 
 interface RouterOutletProps<TView> {
   router: Router;
   routes: RouteInput<TView>[];
-}
-
-interface NotFound {
-  appliedPath: string[];
 }
 
 interface Disposable {
@@ -58,7 +59,7 @@ function createRouterOutlet<TView extends Template>(
 
   function createRouter(
     paths: Rx.Observable<router.Path>,
-    routes: router.PathResolver<TView> | RouteInput<TView>[],
+    routes: PathResolver<TView> | RouteInput<TView>[],
     routerContext?: RouterContext
   ) {
     return paths.pipe(
@@ -69,21 +70,27 @@ function createRouterOutlet<TView extends Template>(
   }
 
   function executeView(
-    resolution: router.PathResolved<TView>,
+    resolution: PathResolved<TView>,
     url: UrlHelper
   ): Disposable {
     const { view, params } = resolution;
 
-    const context = {
+    const context: ViewContext = {
       url,
       params,
-      childRouter(mappings: router.PathResolver<TView> | RouteInput<TView>[]) {
-        // createRouter(childRoutes$, mappings, this);
-      },
+      // childRouter(_: PathResolver<TView> | RouteInput<TView>[]) {
+      //   // createRouter(childRoutes$, mappings, this);
+      // },
     };
 
     const scope = createScope(targetElement);
-    const bindings = render(view, scope);
+    if (typeof view === 'function') {
+      render(view(context), scope);
+    } else {
+      render(view, scope);
+    }
+
+    // const bindings = render(view, scope);
     return {
       dispose() {
         // disposeMany(bindings);
@@ -110,7 +117,7 @@ function createRouterOutlet<TView extends Template>(
 
       return [entries, remainingPath];
 
-      function execute(res: router.PathResolved<TView>, idx: number) {
+      function execute(res: PathResolved<TView>, idx: number) {
         const parentEntry = entries[idx + offset - 1];
         const url = new UrlHelper(
           res.appliedPath,
@@ -140,6 +147,13 @@ function createScope(targetElement: Element): RenderTarget {
   const nodes: Node[] = [];
 
   return {
+    removeChild(node: Node) {
+      const idx = nodes.indexOf(node);
+      if (idx >= 0) {
+        targetElement.removeChild(node);
+        nodes.splice(idx, 1);
+      }
+    },
     appendChild(node: Node) {
       const lastNode = nodes[nodes.length - 1] || commentNode;
       targetElement.insertBefore(node, lastNode);

@@ -1,38 +1,24 @@
-import { PathTemplate } from 'lib/resolvers/path-template';
-
-interface PathMatcher {
-  call(path: router.Path): RouteSegment;
-}
-
-export interface Route<TView> {
-  path: PathTemplate;
-  view: TView;
-  resolve?: router.PathResolver<TView>;
-}
-
-interface RouteSegment {
-  path: router.Path;
-  params: router.RouteParams;
-}
-
-export interface ComponentRoute<TView> {
-  path: PathTemplate;
-  component: () => RouterComponent<TView>;
-}
-
-export type RouteInput<TView> = Route<TView> | ComponentRoute<TView>;
-
-export interface RouterComponent<TView = unknown> {
-  view: TView;
-  routes?: RouteInput<TView>[];
-}
+import { PathTemplate } from '../resolvers/path-template';
+import { PathMatcher, PathResolver, Route } from '../../types/router';
+import { pathMatcher } from './path-matcher';
 
 export function route<TView>(
-  path: Route<TView>['path'],
-  view: Route<TView>['view']
+  path: string | PathTemplate | PathMatcher,
+  view: Route<TView>['view'],
+  resolve?: PathResolver<TView>
 ): Route<TView> {
   return {
-    path,
+    match: pathMatcher(path),
+    view,
+    resolve,
+  };
+}
+
+export function notFound<TView>(view: Route<TView>['view']): Route<TView> {
+  return {
+    match(path: router.Path) {
+      return { segment: path, params: {} };
+    },
     view,
   };
 }

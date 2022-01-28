@@ -1,9 +1,8 @@
 import { Template } from '@xania/view';
 import * as Rx from 'rxjs';
 import * as Ro from 'rxjs/operators';
-import { Router } from 'types/router';
+import { RouteInput, Router } from '../types/router';
 import { RouterOutlet } from './outlet';
-import { RouteInput } from './route';
 
 export class BrowserRouter implements router.Navigator, Router {
   constructor() {}

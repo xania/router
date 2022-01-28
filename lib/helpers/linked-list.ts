@@ -1,3 +1,5 @@
+import { PathResolved, PathResolver } from '../../types/router';
+
 export type LinkedList<T> =
   | {
       head: T;
@@ -8,7 +10,7 @@ export type LinkedList<T> =
 export function cons<T>(head: T, tail: LinkedList<T>): LinkedList<T> {
   if (head) return { head, tail };
   else if (tail) return tail;
-  else return;
+  else return undefined;
 }
 
 export function length<T>(x: LinkedList<T>): number {
@@ -36,7 +38,7 @@ export function map<T, U>(
 
   function _map(l: LinkedList<T>, index: number): LinkedList<U> {
     if (!l) {
-      return;
+      return undefined;
     }
     return {
       head: project(l.head, index, list),
@@ -66,10 +68,10 @@ export function reduce<T, U>(
 
 export async function traverse<TView>(
   remainingPath: router.Path,
-  resolve?: router.PathResolver<TView>
-): Promise<LinkedList<router.PathResolved<TView>>> {
+  resolve?: PathResolver<TView>
+): Promise<LinkedList<PathResolved<TView>>> {
   if (!resolve) {
-    return;
+    return undefined;
   }
 
   const result = await resolve(remainingPath);
@@ -88,6 +90,6 @@ export async function traverse<TView>(
       ),
     };
   } else {
-    return;
+    return undefined;
   }
 }

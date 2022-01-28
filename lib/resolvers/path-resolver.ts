@@ -1,4 +1,9 @@
-import { RouteInput } from 'lib/route';
+import {
+  PathResolution,
+  PathResolved,
+  PathResolver,
+  RouteInput,
+} from '../../types/router';
 import {
   concat,
   cons,
@@ -9,18 +14,18 @@ import {
 import { createViewResolver } from './view-resolver';
 
 export interface ResolvedPath<T> {
-  unchanged: LinkedList<router.PathResolved<T>>;
-  newResolutions: LinkedList<router.PathResolved<T>>;
+  unchanged: LinkedList<PathResolved<T>>;
+  newResolutions: LinkedList<PathResolved<T>>;
   remainingPath: router.Path;
 }
 
 export function createPathResolver<TView>(
-  mappings: router.PathResolver<TView> | RouteInput<TView>[]
+  mappings: PathResolver<TView> | RouteInput<TView>[]
 ) {
-  const rootResolve: router.PathResolver<TView> = isPathResolver(mappings)
+  const rootResolve: PathResolver<TView> = isPathResolver(mappings)
     ? mappings
     : createViewResolver(mappings);
-  let prev: LinkedList<router.PathResolved<TView>>;
+  let prev: LinkedList<PathResolved<TView>>;
   return async (route: router.Path) => {
     const { unchanged, remainingRoute, resolve } = unchangedResolutions<TView>(
       route,
@@ -45,11 +50,11 @@ export function createPathResolver<TView>(
 
 function unchangedResolutions<TView>(
   route: string[],
-  prevlist: LinkedList<router.PathResolved<TView>>
+  prevlist: LinkedList<PathResolved<TView>>
 ): {
   remainingRoute: router.Path;
-  unchanged?: LinkedList<router.PathResolved<TView>>;
-  resolve?: router.PathResolver<TView>;
+  unchanged?: LinkedList<PathResolved<TView>>;
+  resolve?: PathResolver<TView>;
 } {
   if (!prevlist) {
     return { remainingRoute: route };
@@ -75,7 +80,7 @@ function unchangedResolutions<TView>(
 }
 
 function isValidResolution<TView>(
-  result: router.PathResolution<TView>,
+  result: PathResolution<TView>,
   remainingPath: string[]
 ): boolean {
   if (result && 'view' in result) {
@@ -91,6 +96,6 @@ function isValidResolution<TView>(
   return false;
 }
 
-function isPathResolver(mapping: any): mapping is router.PathResolver<any> {
+function isPathResolver(mapping: any): mapping is PathResolver<any> {
   return mapping && typeof mapping === 'function';
 }
