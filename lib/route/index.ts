@@ -14,7 +14,7 @@ export function route<TView>(
   };
 }
 
-export function notFound<TView>(view: Route<TView>['view']): Route<TView> {
+export function anyRoute<TView>(view: Route<TView>['view']): Route<TView> {
   return {
     match(path: router.Path) {
       return { segment: path, params: {} };

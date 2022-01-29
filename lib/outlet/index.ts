@@ -144,20 +144,25 @@ function createRouterOutlet<TView extends Template>(
 function createScope(targetElement: Element): RenderTarget {
   const commentNode = document.createComment('');
   targetElement.appendChild(commentNode);
-  const nodes: Node[] = [];
+  const childNodes: Node[] = [];
 
   return {
+    childNodes,
+    contains(node) {
+      if (!node) return false;
+      return childNodes.indexOf(node) >= 0;
+    },
     removeChild(node: Node) {
-      const idx = nodes.indexOf(node);
+      const idx = childNodes.indexOf(node);
       if (idx >= 0) {
         targetElement.removeChild(node);
-        nodes.splice(idx, 1);
+        childNodes.splice(idx, 1);
       }
     },
     appendChild(node: Node) {
-      const lastNode = nodes[nodes.length - 1] || commentNode;
+      const lastNode = childNodes[childNodes.length - 1] || commentNode;
       targetElement.insertBefore(node, lastNode);
-      nodes.push(node);
+      childNodes.push(node);
     },
     addEventListener(
       type: string,
