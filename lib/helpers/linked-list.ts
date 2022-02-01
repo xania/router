@@ -1,4 +1,4 @@
-import { PathResolved, PathResolver } from '../../types/router';
+import { PathResolved, PathResolver } from '../router';
 
 export type LinkedList<T> =
   | {

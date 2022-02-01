@@ -3,7 +3,7 @@ import {
   PathResolved,
   PathResolver,
   RouteInput,
-} from '../../types/router';
+} from '../router';
 import {
   concat,
   cons,

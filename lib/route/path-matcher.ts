@@ -1,4 +1,4 @@
-import { PathMatcher } from '../../types/router';
+import { PathMatcher } from '../router';
 import { compilePathTemplate, PathTemplate } from '../resolvers/path-template';
 
 export function pathMatcher(

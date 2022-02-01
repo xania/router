@@ -1,4 +1,4 @@
-import { PathResolution, PathResolved, RouteInput } from '../../types/router';
+import { PathResolution, PathResolved, RouteInput } from '../router';
 
 export function createViewResolver<TView>(routes: RouteInput<TView>[]): any {
   if (isArrayEmpty(routes)) {
