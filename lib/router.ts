@@ -1,5 +1,5 @@
 import type { Observable } from 'rxjs';
-import { UrlHelper } from './url-helper';
+import { UrlHelper } from './helpers/url-helper';
 
 export interface Router extends router.Navigator {
   getRoutes(basePath: router.Path): Observable<router.Path>;
@@ -16,11 +16,13 @@ export interface PathResolver<T> {
   (path: router.Path): Promise<PathResolved<T>>;
 }
 
-export type ViewFn<TView> = (context: ViewContext) => TView;
-
+export type ViewFn<TView> = (context?: RouteContext) => TView;
+export interface ViewConstructor<TView> {
+  new (context?: RouteContext): TView;
+}
 export interface Route<TView> {
   match: PathMatcher;
-  view: TView | ViewFn<TView>;
+  view: ViewFn<TView> | ViewConstructor<TView>;
   resolve?: PathResolver<TView>;
 }
 
@@ -33,8 +35,9 @@ export interface PathMatchResult {
 
 export type RouteInput<TView> = Route<TView>;
 
-export interface ViewContext {
+export interface RouteContext {
   url: UrlHelper;
+  path: string[];
   params?: router.RouteParams | null;
 }
 

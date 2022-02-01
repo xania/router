@@ -6,16 +6,16 @@ import {
   PathResolver,
   RouteInput,
   Router,
-  ViewContext,
-} from '../../types/router';
+  RouteContext,
+} from '../router';
 import { length, map } from '../helpers/linked-list';
-import { render, Template } from '@xania/view';
-import { RenderTarget } from '@xania/view';
-import { UrlHelper } from '../../types/url-helper';
+import { UrlHelper } from '../helpers/url-helper';
+import type { RenderTarget } from '@xania/view';
 
-interface RouterOutletProps<TView> {
+export interface RouterOutletProps<TView> {
   router: Router;
   routes: RouteInput<TView>[];
+  render(view: TView, target: RenderTarget): Disposable;
 }
 
 interface Disposable {
@@ -27,7 +27,7 @@ interface RouterContext {
   navigator: router.Navigator;
 }
 
-export function RouterOutlet<TView extends Template>(
+export function RouterOutlet<TView>(
   props: RouterOutletProps<TView>
   // children: router.RouteInput<TView>[]
 ) {
@@ -38,7 +38,7 @@ export function RouterOutlet<TView extends Template>(
   };
 }
 
-function createRouterOutlet<TView extends Template>(
+function createRouterOutlet<TView>(
   targetElement: Element,
   props: RouterOutletProps<TView>
 ) {
@@ -75,8 +75,9 @@ function createRouterOutlet<TView extends Template>(
   ): Disposable {
     const { view, params } = resolution;
 
-    const context: ViewContext = {
+    const context: RouteContext = {
       url,
+      path: url.path,
       params,
       // childRouter(_: PathResolver<TView> | RouteInput<TView>[]) {
       //   // createRouter(childRoutes$, mappings, this);
@@ -84,11 +85,13 @@ function createRouterOutlet<TView extends Template>(
     };
 
     const scope = createScope(targetElement);
-    if (typeof view === 'function') {
-      render(view(context), scope);
-    } else {
-      render(view, scope);
+    let element: TView;
+    try {
+      element = (view as any)(context);
+    } catch {
+      element = Reflect.construct(view as Function, [context]);
     }
+    props.render(element, scope);
 
     // const bindings = render(view, scope);
     return {

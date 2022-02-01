@@ -1,8 +1,7 @@
-import { Template } from '@xania/view';
 import * as Rx from 'rxjs';
 import * as Ro from 'rxjs/operators';
-import { RouteInput, Router } from '../types/router';
-import { RouterOutlet } from './outlet';
+import { RouteInput, Router } from './router';
+import { RouterOutlet, RouterOutletProps } from './outlet';
 
 export class BrowserRouter implements router.Navigator, Router {
   constructor() {}
@@ -32,11 +31,10 @@ export class BrowserRouter implements router.Navigator, Router {
 
 interface BrowserOutletProps<T> {
   routes: RouteInput<T>[];
+  render: RouterOutletProps<T>['render'];
 }
 
-export function BrowserOutlet<T extends Template>(
-  props: BrowserOutletProps<T>
-) {
+export function BrowserOutlet<T>(props: BrowserOutletProps<T>) {
   return RouterOutlet({ ...props, router: new BrowserRouter() });
 }
 

@@ -1,5 +1,5 @@
 import { PathTemplate } from '../resolvers/path-template';
-import { PathMatcher, PathResolver, Route } from '../../types/router';
+import { PathMatcher, PathResolver, Route } from '../router';
 import { pathMatcher } from './path-matcher';
 
 export function route<TView>(
@@ -14,7 +14,7 @@ export function route<TView>(
   };
 }
 
-export function anyRoute<TView>(view: Route<TView>['view']): Route<TView> {
+export function fallback<TView>(view: Route<TView>['view']): Route<TView> {
   return {
     match(path: router.Path) {
       return { segment: path, params: {} };
