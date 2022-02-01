@@ -2,6 +2,7 @@ import * as Rx from 'rxjs';
 import * as Ro from 'rxjs/operators';
 import { RouteInput, Router } from './router';
 import { RouterOutlet, RouterOutletProps } from './outlet';
+import { RenderTarget } from '@xania/view';
 
 export class BrowserRouter implements router.Navigator, Router {
   constructor() {}
@@ -29,13 +30,18 @@ export class BrowserRouter implements router.Navigator, Router {
   }
 }
 
-interface BrowserOutletProps<T> {
+interface WebAppProps<T> {
   routes: RouteInput<T>[];
+  target?: RenderTarget | string;
   render: RouterOutletProps<T>['render'];
 }
 
-export function BrowserOutlet<T>(props: BrowserOutletProps<T>) {
-  return RouterOutlet({ ...props, router: new BrowserRouter() });
+export function WebApp<T>(props: WebAppProps<T>) {
+  const { target, render, ...rest } = props;
+  props.render(
+    RouterOutlet({ ...rest, render, router: new BrowserRouter() }) as any,
+    target || document.body
+  );
 }
 
 function startsWith(route: router.Path, base: router.Path) {

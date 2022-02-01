@@ -15,7 +15,7 @@ import type { RenderTarget } from '@xania/view';
 export interface RouterOutletProps<TView> {
   router: Router;
   routes: RouteInput<TView>[];
-  render(view: TView, target: RenderTarget): Disposable;
+  render(view: TView, target: RenderTarget | string): Disposable;
 }
 
 interface Disposable {
