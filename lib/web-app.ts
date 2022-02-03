@@ -38,7 +38,7 @@ interface WebAppProps<T> {
 
 export function WebApp<T>(props: WebAppProps<T>) {
   const { target, render, ...rest } = props;
-  props.render(
+  render(
     RouterOutlet({ ...rest, render, router: new BrowserRouter() }) as any,
     target || document.body
   );

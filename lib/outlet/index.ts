@@ -42,7 +42,7 @@ function createRouterOutlet<TView>(
   targetElement: Element,
   props: RouterOutletProps<TView>
 ) {
-  const childRoutes$ = new Rx.BehaviorSubject<string[]>([]);
+  const childRoutes$ = new Rx.ReplaySubject<string[]>(1);
   const { router, routes } = props;
 
   const subscr = createRouter(router.getRoutes([]), routes).subscribe({
@@ -151,10 +151,6 @@ function createScope(targetElement: Element): RenderTarget {
 
   return {
     childNodes,
-    contains(node) {
-      if (!node) return false;
-      return childNodes.indexOf(node) >= 0;
-    },
     removeChild(node: Node) {
       const idx = childNodes.indexOf(node);
       if (idx >= 0) {
