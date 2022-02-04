@@ -84,14 +84,13 @@ function createRouterOutlet<TView>(
       // },
     };
 
-    const scope = createScope(targetElement);
     let element: TView;
     try {
       element = (view as any)(context);
     } catch {
       element = Reflect.construct(view as Function, [context]);
     }
-    props.render(element, scope);
+    props.render(element, targetElement);
 
     // const bindings = render(view, scope);
     return {
@@ -143,42 +142,6 @@ function createRouterOutlet<TView>(
 // function isPromise(x: any): x is Promise<any> {
 //   return !!x && typeof x.then == 'function';
 // }
-
-function createScope(targetElement: Element): RenderTarget {
-  const commentNode = document.createComment('');
-  targetElement.appendChild(commentNode);
-  const childNodes: Node[] = [];
-
-  return {
-    childNodes,
-    removeChild(node: Node) {
-      const idx = childNodes.indexOf(node);
-      if (idx >= 0) {
-        targetElement.removeChild(node);
-        childNodes.splice(idx, 1);
-      }
-    },
-    appendChild(node: Node) {
-      const lastNode = childNodes[childNodes.length - 1] || commentNode;
-      targetElement.insertBefore(node, lastNode);
-      childNodes.push(node);
-    },
-    addEventListener(
-      type: string,
-      handler: (this: Element, event: Event) => void
-    ) {
-      targetElement.addEventListener(type, handler);
-    },
-    insertBefore<T extends Node>(node: T, child: Node | null) {
-      targetElement.insertBefore(node, child);
-      return node;
-    },
-    // dispose() {
-    //   for (const node of nodes) {
-    //     targetElement.removeChild(node);
-    //   }
-  };
-}
 
 interface ViewResult {
   url: UrlHelper;
