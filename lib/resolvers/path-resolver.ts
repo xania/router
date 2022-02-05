@@ -22,24 +22,24 @@ export interface ResolvedPath<T> {
 export function createPathResolver<TView>(
   mappings: PathResolver<TView> | RouteInput<TView>[]
 ) {
-  const rootResolve: PathResolver<TView> = isPathResolver(mappings)
+  const rootResolve: PathResolver<TView> | null = isPathResolver(mappings)
     ? mappings
     : createViewResolver(mappings);
   let prev: LinkedList<PathResolved<TView>>;
-  return async (route: router.Path) => {
+  return async (path: router.Path) => {
     const { unchanged, remainingRoute, resolve } = unchangedResolutions<TView>(
-      route,
+      path,
       prev
     );
     const newResolutions = await traverse(
       remainingRoute,
-      resolve || rootResolve
+      resolve || rootResolve || undefined
     );
 
     prev = concat(unchanged, newResolutions);
     const appliedLength = reduce((p, n) => p + n.appliedPath.length, prev, 0);
 
-    const remainingPath = route.slice(appliedLength);
+    const remainingPath = path.slice(appliedLength);
     return {
       unchanged,
       newResolutions,

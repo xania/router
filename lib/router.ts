@@ -13,13 +13,18 @@ export interface PathResolved<TView> {
 
 export type PathResolution<TView> = PathResolved<TView> | router.PathNotFound;
 export interface PathResolver<T> {
-  (path: router.Path): Promise<PathResolved<T>>;
+  (path: router.Path): PromiseLike<PathResolution<T>>;
 }
 
-export type ViewFn<TView> = (context?: RouteContext) => TView;
+export type ViewFn<TView> = (
+  context?: RouteContext
+) => TView | ViewPromise<TView>;
 export interface ViewConstructor<TView> {
   new (context?: RouteContext): TView;
 }
+
+export type ViewPromise<TView> = PromiseLike<TView>;
+
 export interface Route<TView> {
   match: PathMatcher;
   view: ViewFn<TView> | ViewConstructor<TView>;

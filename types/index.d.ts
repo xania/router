@@ -5,8 +5,6 @@ declare namespace router {
     execute(path: Path): void;
   }
 
-  export interface ViewContext {}
-
   export interface Disposable {}
 
   export interface PathNotFound {

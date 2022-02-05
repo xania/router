@@ -1,6 +1,13 @@
-import { PathResolution, PathResolved, RouteInput } from '../router';
+import {
+  PathResolution,
+  PathResolved,
+  RouteInput,
+  PathResolver,
+} from '../router';
 
-export function createViewResolver<TView>(routes: RouteInput<TView>[]): any {
+export function createViewResolver<TView>(
+  routes: RouteInput<TView>[]
+): PathResolver<TView> | null {
   if (isArrayEmpty(routes)) {
     return null;
   }
@@ -13,18 +20,27 @@ export function createViewResolver<TView>(routes: RouteInput<TView>[]): any {
       });
     };
   }
-  return (remainingPath: string[]) => {
+  return (remainingPath: router.Path) => {
     for (const route of routes) {
       const result = route.match(remainingPath);
       if (result) {
         const { view } = route;
         const appliedPath = result.segment;
-        return Promise.resolve<PathResolved<TView>>({
-          appliedPath,
-          view,
-          params: result.params,
-          resolve: route.resolve,
-        });
+        if (isPromise(view)) {
+          return view.then((v) => ({
+            appliedPath,
+            view: v,
+            params: result.params,
+            resolve: route.resolve,
+          }));
+        } else {
+          return Promise.resolve<PathResolved<TView>>({
+            appliedPath,
+            view,
+            params: result.params,
+            resolve: route.resolve,
+          });
+        }
       }
     }
     const notFound: router.PathNotFound = {
@@ -72,3 +88,7 @@ function isArrayEmpty(arr: any[]) {
 //     },
 //   };
 // }
+
+function isPromise(value: any): value is PromiseLike<any> {
+  return value && typeof value.then === 'function';
+}

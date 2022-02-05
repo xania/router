@@ -73,7 +73,7 @@ function createRouterOutlet<TView>(
     resolution: PathResolved<TView>,
     url: UrlHelper
   ): Disposable {
-    const { view, params } = resolution;
+    const { params } = resolution;
 
     const context: RouteContext = {
       url,
@@ -84,13 +84,21 @@ function createRouterOutlet<TView>(
       // },
     };
 
-    let element: TView;
-    try {
-      element = (view as any)(context);
-    } catch {
-      element = Reflect.construct(view as Function, [context]);
+    function renderView(view: any) {
+      try {
+        const element = (view as any)(context);
+        if (!isPromise(element)) {
+          props.render(element, targetElement);
+        } else {
+          element.then(renderView);
+        }
+      } catch {
+        const component = Reflect.construct(view as Function, [context]);
+        props.render(component, targetElement);
+      }
     }
-    props.render(element, targetElement);
+
+    renderView(resolution.view);
 
     // const bindings = render(view, scope);
     return {
@@ -139,9 +147,9 @@ function createRouterOutlet<TView>(
 //   return typeof child === 'function' ? child(context) : child;
 // }
 
-// function isPromise(x: any): x is Promise<any> {
-//   return !!x && typeof x.then == 'function';
-// }
+function isPromise(x: any): x is Promise<any> {
+  return !!x && x.then instanceof Function;
+}
 
 interface ViewResult {
   url: UrlHelper;
