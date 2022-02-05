@@ -20,9 +20,12 @@ export type ViewFn<TView> = (context?: RouteContext) => TView;
 export interface ViewConstructor<TView> {
   new (context?: RouteContext): TView;
 }
+
+export type ViewPromise<TView> = PromiseLike<TView>;
+
 export interface Route<TView> {
   match: PathMatcher;
-  view: ViewFn<TView> | ViewConstructor<TView>;
+  view: ViewFn<TView> | ViewConstructor<TView> | ViewPromise<TView>;
   resolve?: PathResolver<TView>;
 }
 
