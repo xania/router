@@ -27,7 +27,7 @@ export type ViewPromise<TView> = PromiseLike<TView>;
 
 export interface Route<TView> {
   match: PathMatcher;
-  view: ViewFn<TView> | ViewConstructor<TView>;
+  view: ViewFn<TView> | ViewConstructor<TView> | ViewPromise<TView>;
   resolve?: PathResolver<TView>;
 }
 
